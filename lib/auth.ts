@@ -25,10 +25,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid email or password');
         }
 
-        // Verify password with bcrypt (falls back to plaintext for legacy seed data)
-        const isValid = user.passwordHash.startsWith('$2')
-          ? await bcrypt.compare(credentials.password, user.passwordHash)
-          : credentials.password === user.passwordHash;
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
 
         if (!isValid) {
           throw new Error('Invalid email or password');

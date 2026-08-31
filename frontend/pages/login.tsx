@@ -161,17 +161,6 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-secondary-200">
-                <p className="text-xs text-secondary-500 text-center mb-3">{t({ en: 'Demo Credentials', ur: 'ڈیمو کیریڈینشلز' }, language)}</p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="p-2 bg-secondary-50 rounded text-secondary-700">
-                    <strong>{t({ en: 'Admin', ur: 'ایڈمن' }, language)}:</strong> admin@civicai.pk / admin123
-                  </div>
-                  <div className="p-2 bg-secondary-50 rounded text-secondary-700">
-                    <strong>{t({ en: 'User', ur: 'صارف' }, language)}:</strong> ahmed@civicai.pk / user123
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

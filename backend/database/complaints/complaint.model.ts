@@ -27,6 +27,7 @@ export interface IComplaint extends Document {
   };
   assignedOrganization?: string;
   organizationReferenceId?: string;
+  adminNotes?: string;
   createdAt: Date;
   updatedAt: Date;
   resolvedAt?: Date;
@@ -68,6 +69,7 @@ const ComplaintSchema = new Schema<IComplaint>({
   aiAnalysis: { type: AIAnalysisSchema, required: true },
   assignedOrganization: { type: String },
   organizationReferenceId: { type: String },
+  adminNotes: { type: String },
   resolvedAt: { type: Date },
 }, {
   timestamps: true,
