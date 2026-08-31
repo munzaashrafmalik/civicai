@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar/Navbar';
 import { adminApi, organizationsApi } from '@/lib/api';
 import ComplaintTable from './complaints/ComplaintTable';
 import AnalyticsCharts from './analytics/AnalyticsCharts';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
@@ -42,7 +43,7 @@ interface OrganizationItem {
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
   const [activeTab, setActiveTab] = useState<'overview' | 'complaints' | 'analytics' | 'organizations'>('overview');
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -180,7 +181,11 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2">
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'ur')}
+                onChange={(e) => {
+                  const lang = e.target.value as 'en' | 'ur';
+                  if (typeof window !== 'undefined') localStorage.setItem('civicai_lang', lang);
+                  setLanguage(lang);
+                }}
                 className="input w-auto"
               >
                 <option value="en">English</option>
@@ -263,7 +268,10 @@ export default function AdminDashboard() {
                             : 'bg-white text-secondary-600 hover:bg-secondary-100 border border-secondary-200'
                         }`}
                       >
-                        {t({ en: status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' '), ur: status }, language)}
+                        {t({
+                          en: status === 'all' ? 'All' : status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1),
+                          ur: status === 'all' ? 'سب' : status === 'pending' ? 'زیر التوا' : status === 'in_progress' ? 'کارروائی جاری' : status === 'resolved' ? 'حل ہو گیا' : 'مسترد'
+                        }, language)}
                       </button>
                     ))}
                   </div>

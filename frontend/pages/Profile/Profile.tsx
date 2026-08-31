@@ -306,8 +306,8 @@ export default function ProfilePage() {
                 <div className="pt-6 border-t border-secondary-200">
                   <h3 className="text-lg font-semibold text-secondary-900 mb-4">{t({ en: 'Account Actions', ur: 'اکاؤنٹ ایکشنز' }, language)}</h3>
                   <div className="space-y-3">
-                    <button className="btn-outline w-full justify-start">Export My Data</button>
-                    <button className="btn-outline w-full justify-start text-danger-600 hover:bg-danger-50 border-danger-200">Delete Account</button>
+                    <button className="btn-outline w-full justify-start">{t({ en: 'Export My Data', ur: 'میرا ڈیٹا برآمد کریں' }, language)}</button>
+                    <button className="btn-outline w-full justify-start text-danger-600 hover:bg-danger-50 border-danger-200">{t({ en: 'Delete Account', ur: 'اکاؤنٹ حذف کریں' }, language)}</button>
                   </div>
                 </div>
               </div>
