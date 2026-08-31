@@ -3,11 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar/Navbar';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
 export default function HomePage() {
-  const [language, setLanguage] = React.useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = React.useState<'en' | 'ur'>(getStoredLanguage);
   const [stats, setStats] = React.useState<{ totalComplaints: number; totalOrganizations: number } | null>(null);
 
   React.useEffect(() => {

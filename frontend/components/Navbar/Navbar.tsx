@@ -38,6 +38,7 @@ export default function Navbar({ language = 'en', onLanguageChange }: NavbarProp
   };
 
   const handleLanguageChange = (lang: 'en' | 'ur') => {
+    if (typeof window !== 'undefined') localStorage.setItem('civicai_lang', lang);
     onLanguageChange?.(lang);
   };
 

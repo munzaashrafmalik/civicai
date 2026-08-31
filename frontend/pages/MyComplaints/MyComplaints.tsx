@@ -7,6 +7,7 @@ import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
 import IssueCard from '@/components/IssueCard/IssueCard';
 import { complaintsApi } from '@/lib/api';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
@@ -29,7 +30,7 @@ export default function MyComplaintsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { error: toastError } = useToastHelpers();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'resolved'>('all');

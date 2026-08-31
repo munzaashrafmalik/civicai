@@ -5,13 +5,14 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
 export default function LoginPage() {
   const router = useRouter();
   const { error: toastError, success } = useToastHelpers();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

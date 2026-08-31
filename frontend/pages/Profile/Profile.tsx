@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
 import { userApi, complaintsApi } from '@/lib/api';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
@@ -27,7 +28,7 @@ export default function ProfilePage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const { success, error: toastError } = useToastHelpers();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
   const [activeTab, setActiveTab] = useState<'profile' | 'settings' | 'notifications'>('profile');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState({

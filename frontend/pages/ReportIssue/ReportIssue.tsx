@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
@@ -10,6 +11,7 @@ import LocationPicker from '@/components/LocationPicker/LocationPicker';
 import AIAnalysis from '@/components/AIAnalysis/AIAnalysis';
 import ComplaintPreview from '@/components/ComplaintPreview/ComplaintPreview';
 import { aiApi, complaintsApi } from '@/lib/api';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
@@ -71,8 +73,14 @@ interface AIAnalysisResult {
 
 export default function ReportIssuePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const { success, error } = useToastHelpers();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
+
+  useEffect(() => {
+    const sessionLang = (session?.user as any)?.language;
+    if (sessionLang === 'ur') setLanguage('ur');
+  }, [session]);
   const [step, setStep] = useState<Step>('input');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

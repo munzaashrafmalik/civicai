@@ -5,13 +5,14 @@ import { useRouter } from 'next/router';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
 import { authApi } from '@/lib/api';
+import { getStoredLanguage } from '@/lib/i18n';
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
 export default function RegisterPage() {
   const router = useRouter();
   const { error: toastError, success } = useToastHelpers();
-  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+  const [language, setLanguage] = useState<'en' | 'ur'>(getStoredLanguage);
   const [formData, setFormData] = useState({
     name: '',
     email: '',

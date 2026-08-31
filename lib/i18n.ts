@@ -1,5 +1,10 @@
 export type Language = 'en' | 'ur';
 
+export function getStoredLanguage(): Language {
+  if (typeof window === 'undefined') return 'en';
+  return (localStorage.getItem('civicai_lang') as Language) || 'en';
+}
+
 export const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
