@@ -45,50 +45,78 @@ export default function AnalyticsCharts({
   };
 
   const renderLineChart = (data: Array<{ _id: string; count: number }>, color: string) => {
-    if (data.length === 0) return <p className="text-secondary-500 text-center py-8">{t({ en: 'No data', ur: 'کوئی ڈیٹا نہیں' }, language)}</p>;
+    // Build last 7 days array, filling missing days with 0
+    const days: Array<{ date: string; count: number; label: { en: string; ur: string } }> = [];
+    const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNamesUr = ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'];
 
-    const maxCount = Math.max(...data.map(d => d.count), 1);
-    const points = data.map((d, i) => {
-      const x = (i / (data.length - 1)) * 100;
-      const y = 100 - (d.count / maxCount) * 90;
-      return `${x}% ${y}%`;
-    }).join(',');
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const found = data.find(x => x._id === key);
+      days.push({
+        date: key,
+        count: found?.count || 0,
+        label: { en: dayNamesEn[d.getDay()], ur: dayNamesUr[d.getDay()] },
+      });
+    }
+
+    const maxCount = Math.max(...days.map(d => d.count), 1);
+    const W = 300;
+    const H = 120;
+    const PAD = { top: 20, right: 10, bottom: 30, left: 30 };
+    const chartW = W - PAD.left - PAD.right;
+    const chartH = H - PAD.top - PAD.bottom;
+
+    const pts = days.map((d, i) => ({
+      x: PAD.left + (i / 6) * chartW,
+      y: PAD.top + chartH - (d.count / maxCount) * chartH,
+      count: d.count,
+      label: d.label,
+    }));
+
+    const polyline = pts.map(p => `${p.x},${p.y}`).join(' ');
+    const area = `${pts[0].x},${PAD.top + chartH} ${polyline} ${pts[pts.length - 1].x},${PAD.top + chartH}`;
+
+    // Y-axis ticks
+    const yTicks = [0, Math.round(maxCount / 2), maxCount];
 
     return (
-      <div className="relative h-48">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Grid lines */}
-          <defs>
-            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e2e8f0" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#grid)" />
-
-          {/* Area */}
-          <polyline
-            fill="none"
-            stroke={color}
-            strokeWidth="2"
-            points={points}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Dots */}
-          {data.map((d, i) => {
-            const x = (i / (data.length - 1)) * 100;
-            const y = 100 - (d.count / maxCount) * 90;
+      <div className="overflow-x-auto">
+        <svg width={W} height={H} className="w-full" viewBox={`0 0 ${W} ${H}`}>
+          {/* Y axis ticks */}
+          {yTicks.map((tick, i) => {
+            const y = PAD.top + chartH - (tick / maxCount) * chartH;
             return (
-              <circle
-                key={i}
-                cx={`${x}%`}
-                cy={`${y}%`}
-                r="3"
-                fill={color}
-              />
+              <g key={i}>
+                <line x1={PAD.left - 4} y1={y} x2={PAD.left + chartW} y2={y} stroke="#e2e8f0" strokeWidth="0.8" />
+                <text x={PAD.left - 6} y={y + 4} textAnchor="end" fontSize="8" fill="#94a3b8">{tick}</text>
+              </g>
             );
           })}
+
+          {/* Area fill */}
+          <polygon points={area} fill={color} fillOpacity="0.12" />
+
+          {/* Line */}
+          <polyline fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={polyline} />
+
+          {/* Dots + labels */}
+          {pts.map((p, i) => (
+            <g key={i}>
+              {p.count > 0 && (
+                <text x={p.x} y={p.y - 6} textAnchor="middle" fontSize="8" fill={color} fontWeight="600">{p.count}</text>
+              )}
+              <circle cx={p.x} cy={p.y} r="4" fill="white" stroke={color} strokeWidth="2" />
+              <text x={p.x} y={H - 4} textAnchor="middle" fontSize="8" fill="#64748b">
+                {language === 'ur' ? p.label.ur : p.label.en}
+              </text>
+            </g>
+          ))}
+
+          {/* Y axis line */}
+          <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={PAD.top + chartH} stroke="#cbd5e1" strokeWidth="1" />
         </svg>
       </div>
     );
