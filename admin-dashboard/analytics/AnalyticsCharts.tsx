@@ -12,6 +12,28 @@ interface AnalyticsChartsProps {
 
 const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
+const categoryLabels: Record<string, { en: string; ur: string }> = {
+  pothole: { en: 'Pothole', ur: 'گڑھا' },
+  garbage: { en: 'Garbage', ur: 'کوڑا' },
+  water_leakage: { en: 'Water Leakage', ur: 'پانی کا رساو' },
+  streetlight: { en: 'Streetlight', ur: 'سٹریٹ لائٹ' },
+  drainage: { en: 'Drainage', ur: 'ڈرینج' },
+  traffic_signal: { en: 'Traffic Signal', ur: 'ٹریفک سگنل' },
+  road_damage: { en: 'Road Damage', ur: 'سڑک نقصان' },
+  other: { en: 'Other', ur: 'دیگر' },
+};
+
+const cityLabels: Record<string, { en: string; ur: string }> = {
+  karachi: { en: 'Karachi', ur: 'کراچی' },
+  lahore: { en: 'Lahore', ur: 'لاہور' },
+  islamabad: { en: 'Islamabad', ur: 'اسلام آباد' },
+  rawalpindi: { en: 'Rawalpindi', ur: 'راولپنڈی' },
+  peshawar: { en: 'Peshawar', ur: 'پشاور' },
+  quetta: { en: 'Quetta', ur: 'کوئٹہ' },
+  multan: { en: 'Multan', ur: 'ملتان' },
+  faisalabad: { en: 'Faisalabad', ur: 'فیصل آباد' },
+};
+
 export default function AnalyticsCharts({
   categoryStats,
   cityStats,
@@ -20,26 +42,33 @@ export default function AnalyticsCharts({
   language = 'en',
 }: AnalyticsChartsProps) {
   // Simple SVG-based charts (no external dependencies)
-  const renderBarChart = (data: Array<{ _id: string; count: number }>, color: string, maxValue: number) => {
+  const renderBarChart = (
+    data: Array<{ _id: string; count: number }>,
+    color: string,
+    maxValue: number,
+    labelMap?: Record<string, { en: string; ur: string }>
+  ) => {
     if (data.length === 0) return <p className="text-secondary-500 text-center py-8">{t({ en: 'No data', ur: 'کوئی ڈیٹا نہیں' }, language)}</p>;
 
     return (
       <div className="space-y-3">
-        {data.slice(0, 8).map((item, i) => (
-          <div key={i} className="flex items-center gap-3">
-            <div className="w-24 text-sm text-secondary-600 truncate">{item._id}</div>
-            <div className="flex-1 h-6 bg-secondary-100 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${(item.count / maxValue) * 100}%`,
-                  backgroundColor: color,
-                }}
-              />
+        {data.slice(0, 8).map((item, i) => {
+          const label = labelMap?.[item._id]
+            ? t(labelMap[item._id], language)
+            : item._id.replace(/_/g, ' ');
+          return (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-28 text-sm text-secondary-600 truncate">{label}</div>
+              <div className="flex-1 h-6 bg-secondary-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${(item.count / maxValue) * 100}%`, backgroundColor: color }}
+                />
+              </div>
+              <div className="w-12 text-sm font-medium text-secondary-900 text-right">{item.count}</div>
             </div>
-            <div className="w-12 text-sm font-medium text-secondary-900 text-right">{item.count}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -133,7 +162,7 @@ export default function AnalyticsCharts({
           <h3 className="text-lg font-semibold text-secondary-900">{t({ en: 'Complaints by Category', ur: 'زمرے کے لحاظ سے شکایات' }, language)}</h3>
         </div>
         <div className="card-body">
-          {renderBarChart(categoryStats, '#0ea5e9', maxCategory)}
+          {renderBarChart(categoryStats, '#0ea5e9', maxCategory, categoryLabels)}
         </div>
       </div>
 
@@ -142,7 +171,7 @@ export default function AnalyticsCharts({
           <h3 className="text-lg font-semibold text-secondary-900">{t({ en: 'Complaints by City', ur: 'شہر کے لحاظ سے شکایات' }, language)}</h3>
         </div>
         <div className="card-body">
-          {renderBarChart(cityStats, '#22c55e', maxCity)}
+          {renderBarChart(cityStats, '#22c55e', maxCity, cityLabels)}
         </div>
       </div>
 
