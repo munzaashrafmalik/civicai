@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
@@ -54,6 +55,8 @@ export default function RegisterPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        phone: formData.phone || undefined,
+        language: formData.language,
       });
 
       success(t({ en: 'Account created!', ur: 'اکاؤنٹ بن گیا!' }, language), t({ en: 'Registration successful! Please login.', ur: 'رجسٹریشن کامیاب! براہ کرم لاگ ان کریں۔' }, language));
@@ -71,23 +74,35 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-neutral-50">
       <Navbar language={language} onLanguageChange={setLanguage} />
 
-      <main className="pt-16 pb-12 flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        <div className="max-w-md w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="card">
-            <div className="card-header text-center">
-              <h1 className="text-2xl font-bold text-secondary-900">
-                {t({ en: 'Create Account', ur: 'اکاؤنٹ بنائیں' }, language)}
-              </h1>
-              <p className="text-secondary-600 mt-2">
-                {t({ en: 'Join CivicAI to report and track civic issues', ur: 'CivicAI میں شامل ہوں تاکہ شہری مسائل رپورٹ اور ٹریک کر سکیں' }, language)}
-              </p>
-            </div>
+      <main className="relative pt-20 pb-12 flex items-center justify-center min-h-screen">
+        {/* Background */}
+        <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-secondary-100/40 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-accent-100/30 blur-3xl" />
+        </div>
 
-            <div className="card-body">
-              <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="w-full max-w-lg mx-auto px-4 sm:px-6 animate-slide-up">
+          {/* Logo + Branding */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-lg mb-4">
+              <img src="/logo.png" alt="CivicAI" className="w-16 h-16 rounded-2xl object-contain" />
+            </div>
+            <h1 className="text-2xl font-bold text-neutral-900">
+              {t({ en: 'Create Account', ur: 'اکاؤنٹ بنائیں' }, language)}
+            </h1>
+            <p className="text-neutral-500 mt-1">
+              {t({ en: 'Join CivicAI to report and track civic issues', ur: 'CivicAI میں شامل ہوں تاکہ شہری مسائل رپورٹ اور ٹریک کر سکیں' }, language)}
+            </p>
+          </div>
+
+          {/* Form Card */}
+          <div className="bg-white rounded-2xl shadow-card border border-neutral-200/80 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-secondary-500 via-accent-500 to-secondary-500" />
+            <div className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="name" className="label">
                     {t({ en: 'Full Name', ur: 'پورا نام' }, language)}
@@ -178,7 +193,7 @@ export default function RegisterPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-500 hover:text-secondary-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                       aria-label={showPassword ? t({ en: 'Hide password', ur: 'پاس ورڈ چھپائیں' }, language) : t({ en: 'Show password', ur: 'پاس ورڈ دکھائیں' }, language)}
                     >
                       {showPassword ? (
@@ -216,7 +231,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="btn-primary w-full py-3"
+                  className="w-full py-3 px-4 bg-gradient-to-r from-secondary-600 to-secondary-500 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-secondary-700 hover:to-secondary-600 hover:shadow-md hover:shadow-secondary-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>
@@ -232,14 +247,40 @@ export default function RegisterPage() {
                 </button>
               </form>
 
-              <div className="mt-6 text-center">
-                <p className="text-secondary-600">
-                  {t({ en: 'Already have an account?', ur: 'پہلے سے اکاؤنٹ ہے؟' }, language)}&nbsp;
-                  <a href="/login" className="text-primary-600 font-medium hover:underline">
-                    {t({ en: 'Sign In', ur: 'سائن ان' }, language)}
-                  </a>
-                </p>
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-neutral-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-3 bg-white text-neutral-400">{t({ en: 'or continue with', ur: 'یا اس سے جاری رکھیں' }, language)}</span>
+                </div>
               </div>
+
+              {/* Google Sign Up */}
+              <button
+                type="button"
+                onClick={() => signIn('google', { callbackUrl: '/' })}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-xl hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 text-neutral-700 font-medium text-sm"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                {t({ en: 'Sign up with Google', ur: 'گوگل سے سائن اپ کریں' }, language)}
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="px-8 py-4 bg-neutral-50/80 border-t border-neutral-200/60 text-center">
+              <p className="text-sm text-neutral-500">
+                {t({ en: 'Already have an account?', ur: 'پہلے سے اکاؤنٹ ہے؟' }, language)}&nbsp;
+                <a href="/login" className="text-secondary-600 font-semibold hover:underline">
+                  {t({ en: 'Sign In', ur: 'سائن ان' }, language)}
+                </a>
+              </p>
             </div>
           </div>
         </div>

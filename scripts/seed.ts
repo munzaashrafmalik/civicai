@@ -91,35 +91,35 @@ const organizations = [
 const testUsers = [
   {
     name: 'Admin User',
-    email: 'admin@civicai.pk',
+    email: 'admin@example.com',
     password: 'admin123',
     role: 'admin' as const,
     language: 'en' as const,
-    phone: '+92-300-1234567',
+    phone: '+92-300-0000000',
   },
   {
-    name: 'احمد علی',
-    email: 'ahmed@civicai.pk',
+    name: 'Test User 1',
+    email: 'user1@example.com',
     password: 'user123',
     role: 'citizen' as const,
     language: 'ur' as const,
-    phone: '+92-300-7654321',
+    phone: '+92-300-1111111',
   },
   {
-    name: 'Sarah Khan',
-    email: 'sarah@civicai.pk',
+    name: 'Test User 2',
+    email: 'user2@example.com',
     password: 'user123',
     role: 'citizen' as const,
     language: 'en' as const,
-    phone: '+92-300-1112222',
+    phone: '+92-300-2222222',
   },
   {
-    name: 'فاطمہ شاہ',
-    email: 'fatima@civicai.pk',
+    name: 'Test User 3',
+    email: 'user3@example.com',
     password: 'user123',
     role: 'citizen' as const,
     language: 'ur' as const,
-    phone: '+92-300-3334444',
+    phone: '+92-300-3333333',
   },
 ];
 
@@ -284,10 +284,10 @@ async function seedDatabase() {
 
     console.log('✅ Database seeding completed successfully!');
     console.log('\n📋 Test Credentials:');
-    console.log('Admin: admin@civicai.pk / admin123');
-    console.log('User (Urdu): ahmed@civicai.pk / user123');
-    console.log('User (English): sarah@civicai.pk / user123');
-    console.log('User (Urdu): fatima@civicai.pk / user123');
+    console.log('Admin: admin@example.com / admin123');
+    console.log('User 1: user1@example.com / user123');
+    console.log('User 2: user2@example.com / user123');
+    console.log('User 3: user3@example.com / user123');
 
   } catch (error) {
     console.error('❌ Seeding error:', error);

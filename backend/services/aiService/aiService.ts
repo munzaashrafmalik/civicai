@@ -165,7 +165,7 @@ function sanitizeOutput(out: Partial<AIAnalysisOutput>): AIAnalysisOutput {
 // ---- Deterministic local fallback (no API key / API failure) ----
 
 const categoryKeywords: Record<string, string[]> = {
-  pothole: ['pothole', 'hole', 'pit', 'road damage', 'asphalt', 'گڑھا', 'سڑک کا گڑھا', 'کھڈا'],
+  pothole: ['pothole', 'hole', 'pit', 'asphalt', 'گڑھا', 'سڑک کا گڑھا', 'کھڈا'],
   garbage: ['garbage', 'trash', 'waste', 'rubbish', 'litter', 'کوڑا', 'کچرا', 'گندگی'],
   water_leakage: ['water leak', 'leakage', 'pipe burst', 'water logging', 'پانی کا رساو', 'پانی بہ رہا ہے', 'پائپ پھٹ گیا'],
   streetlight: ['streetlight', 'street light', 'lamp post', 'light not working', 'سٹریٹ لائٹ', 'لائٹ نہیں جلی', 'کھمبہ'],

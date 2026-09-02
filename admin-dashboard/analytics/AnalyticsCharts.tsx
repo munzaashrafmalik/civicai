@@ -66,7 +66,7 @@ export default function AnalyticsCharts({
   ) => {
     if (data.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-12 text-secondary-400">
+        <div className="flex flex-col items-center justify-center py-12 text-neutral-400">
           <svg className="w-12 h-12 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
@@ -78,22 +78,23 @@ export default function AnalyticsCharts({
     return (
       <div className="space-y-4">
         {data.slice(0, 8).map((item, i) => {
-          const label = labelMap?.[item._id]
-            ? t(labelMap[item._id], language)
-            : item._id.replace(/_/g, ' ');
-          const pct = Math.round((item.count / maxValue) * 100);
-          const barColor = colorMap?.[item._id] || gradientFrom;
+          const rawId = item._id ?? '';
+          const label = labelMap?.[rawId]
+            ? t(labelMap[rawId], language)
+            : rawId ? rawId.replace(/_/g, ' ') : t({ en: 'Unknown', ur: 'نامعلوم' }, language);
+          const pct = maxValue > 0 ? Math.round((item.count / maxValue) * 100) : 0;
+          const barColor = colorMap?.[rawId] || gradientFrom;
 
           return (
             <div key={i} className="group">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium text-secondary-700 truncate max-w-[60%]">{label}</span>
+                <span className="text-sm font-medium text-neutral-700 truncate max-w-[60%]">{label}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-secondary-400">{pct}%</span>
-                  <span className="text-sm font-bold text-secondary-900 w-6 text-right">{item.count}</span>
+                  <span className="text-xs text-neutral-400">{pct}%</span>
+                  <span className="text-sm font-bold text-neutral-900 w-6 text-right">{item.count}</span>
                 </div>
               </div>
-              <div className="h-3 bg-secondary-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-neutral-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
@@ -236,7 +237,7 @@ export default function AnalyticsCharts({
     <div className="space-y-6 p-6">
       {/* Row 1: Category + City */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl border border-secondary-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
               <svg className="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,16 +245,16 @@ export default function AnalyticsCharts({
               </svg>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-secondary-900">
+              <h3 className="text-base font-semibold text-neutral-900">
                 {t({ en: 'Complaints by Category', ur: 'زمرے کے لحاظ سے شکایات' }, language)}
               </h3>
-              <p className="text-xs text-secondary-400">{t({ en: 'All time', ur: 'مجموعی' }, language)}</p>
+              <p className="text-xs text-neutral-400">{t({ en: 'All time', ur: 'مجموعی' }, language)}</p>
             </div>
           </div>
           {renderBarChart(categoryStats, '#0ea5e9', '#38bdf8', maxCategory, categoryLabels)}
         </div>
 
-        <div className="bg-white rounded-2xl border border-secondary-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
               <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,10 +263,10 @@ export default function AnalyticsCharts({
               </svg>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-secondary-900">
+              <h3 className="text-base font-semibold text-neutral-900">
                 {t({ en: 'Complaints by City', ur: 'شہر کے لحاظ سے شکایات' }, language)}
               </h3>
-              <p className="text-xs text-secondary-400">{t({ en: 'All cities', ur: 'تمام شہر' }, language)}</p>
+              <p className="text-xs text-neutral-400">{t({ en: 'All cities', ur: 'تمام شہر' }, language)}</p>
             </div>
           </div>
           {renderBarChart(cityStats, '#10b981', '#34d399', maxCity, cityLabels)}
@@ -274,7 +275,7 @@ export default function AnalyticsCharts({
 
       {/* Row 2: Severity + Weekly */}
       <div className="grid lg:grid-cols-5 gap-6">
-        <div className="bg-white rounded-2xl border border-secondary-100 shadow-sm p-6 lg:col-span-2">
+        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 lg:col-span-2">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
               <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,27 +283,27 @@ export default function AnalyticsCharts({
               </svg>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-secondary-900">
+              <h3 className="text-base font-semibold text-neutral-900">
                 {t({ en: 'By Severity', ur: 'شدت کے لحاظ سے' }, language)}
               </h3>
-              <p className="text-xs text-secondary-400">{t({ en: 'Impact level', ur: 'اثر کی سطح' }, language)}</p>
+              <p className="text-xs text-neutral-400">{t({ en: 'Impact level', ur: 'اثر کی سطح' }, language)}</p>
             </div>
           </div>
           {renderBarChart(severityStats, '#f59e0b', '#fbbf24', maxSeverity, severityLabels, severityColors)}
         </div>
 
-        <div className="bg-white rounded-2xl border border-secondary-100 shadow-sm p-6 lg:col-span-3">
+        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 lg:col-span-3">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
-              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-9 h-9 rounded-xl bg-secondary-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-secondary-900">
+              <h3 className="text-base font-semibold text-neutral-900">
                 {t({ en: 'Weekly Trend', ur: 'ہفتہ وار رجحان' }, language)}
               </h3>
-              <p className="text-xs text-secondary-400">{t({ en: 'Last 7 days', ur: 'گزشتہ 7 دن' }, language)}</p>
+              <p className="text-xs text-neutral-400">{t({ en: 'Last 7 days', ur: 'گزشتہ 7 دن' }, language)}</p>
             </div>
           </div>
           {renderLineChart(weeklyTrend, '#0ea5e9')}

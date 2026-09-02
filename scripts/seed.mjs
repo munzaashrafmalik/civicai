@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config({ path: '.env.local' });
 
@@ -21,18 +22,18 @@ const organizations = [
 ];
 
 const testUsers = [
-  { name: 'Admin User', email: 'admin@civicai.pk', passwordHash: 'admin123', role: 'admin', language: 'en', phone: '+92-300-1234567' },
-  { name: 'احمد علی', email: 'ahmed@civicai.pk', passwordHash: 'user123', role: 'citizen', language: 'ur', phone: '+92-300-7654321' },
-  { name: 'Sarah Khan', email: 'sarah@civicai.pk', passwordHash: 'user123', role: 'citizen', language: 'en', phone: '+92-300-1112222' },
-  { name: 'فاطمہ شاہ', email: 'fatima@civicai.pk', passwordHash: 'user123', role: 'citizen', language: 'ur', phone: '+92-300-3334444' },
+  { name: 'Admin User', email: 'admin@example.com', plainPassword: 'admin123', role: 'admin', language: 'en', phone: '+92-300-0000000' },
+  { name: 'Test User 1', email: 'user1@example.com', plainPassword: 'user123', role: 'citizen', language: 'ur', phone: '+92-300-1111111' },
+  { name: 'Test User 2', email: 'user2@example.com', plainPassword: 'user123', role: 'citizen', language: 'en', phone: '+92-300-2222222' },
+  { name: 'Test User 3', email: 'user3@example.com', plainPassword: 'user123', role: 'citizen', language: 'ur', phone: '+92-300-3333333' },
 ];
 
 const sampleComplaints = [
-  { title: 'Large pothole on Main Boulevard', description: 'A large pothole has formed on Main Boulevard near the intersection with 5th Street. It is causing traffic issues and potential vehicle damage.', category: 'pothole', severity: 'high', status: 'pending', location: { lat: 33.6844, lng: 73.0479, address: 'Main Boulevard, Sector F-7, Islamabad', city: 'Islamabad' }, images: [], aiAnalysis: { confidence: 0.92, detectedObjects: ['pothole', 'asphalt', 'road'], suggestedTitle: 'Large pothole on Main Boulevard', modelVersion: '1.0.0' } },
-  { title: 'Garbage overflowing near market', description: 'Garbage bins are overflowing near Raja Bazaar market area. Bad smell and health hazard.', category: 'garbage', severity: 'medium', status: 'in_progress', location: { lat: 33.5651, lng: 73.0169, address: 'Raja Bazaar, Rawalpindi', city: 'Rawalpindi' }, images: [], aiAnalysis: { confidence: 0.88, detectedObjects: ['garbage', 'bins', 'overflow'], suggestedTitle: 'Garbage overflowing near market', modelVersion: '1.0.0' } },
-  { title: 'Water leakage on Mall Road', description: 'Major water leakage from underground pipe on Mall Road. Water flooding the street.', category: 'water_leakage', severity: 'critical', status: 'resolved', location: { lat: 31.5204, lng: 74.3587, address: 'Mall Road, Lahore', city: 'Lahore' }, images: [], aiAnalysis: { confidence: 0.95, detectedObjects: ['water', 'leakage', 'pipe', 'flooding'], suggestedTitle: 'Water leakage on Mall Road', modelVersion: '1.0.0' } },
-  { title: 'Streetlight not working in Gulberg', description: 'Streetlight pole #45 on Gulberg Main Boulevard has been non-functional for 2 weeks.', category: 'streetlight', severity: 'low', status: 'pending', location: { lat: 31.5204, lng: 74.3587, address: 'Gulberg Main Boulevard, Lahore', city: 'Lahore' }, images: [], aiAnalysis: { confidence: 0.9, detectedObjects: ['streetlight', 'pole', 'dark'], suggestedTitle: 'Streetlight not working in Gulberg', modelVersion: '1.0.0' } },
-  { title: 'Drainage blocked causing flooding', description: 'Main drainage line blocked near Karachi University. Heavy rain causes severe flooding.', category: 'drainage', severity: 'high', status: 'in_progress', location: { lat: 24.8607, lng: 67.0011, address: 'University Road, Karachi', city: 'Karachi' }, images: [], aiAnalysis: { confidence: 0.85, detectedObjects: ['drainage', 'flooding', 'blocked'], suggestedTitle: 'Drainage blocked causing flooding', modelVersion: '1.0.0' } },
+  { title: 'Large pothole on Main Boulevard', description: 'A large pothole has formed on Main Boulevard near the intersection with 5th Street. It is causing traffic issues and potential vehicle damage.', issueCategory: 'pothole', severity: 'high', status: 'pending', location: { latitude: 33.6844, longitude: 73.0479, address: 'Main Boulevard, Sector F-7, Islamabad', city: 'Islamabad' }, images: [], aiAnalysis: { confidence: 0.92, detectedObjects: ['pothole', 'asphalt', 'road'], suggestedTitle: 'Large pothole on Main Boulevard', modelVersion: '1.0.0' } },
+  { title: 'Garbage overflowing near market', description: 'Garbage bins are overflowing near Raja Bazaar market area. Bad smell and health hazard.', issueCategory: 'garbage', severity: 'medium', status: 'in_progress', location: { latitude: 33.5651, longitude: 73.0169, address: 'Raja Bazaar, Rawalpindi', city: 'Rawalpindi' }, images: [], aiAnalysis: { confidence: 0.88, detectedObjects: ['garbage', 'bins', 'overflow'], suggestedTitle: 'Garbage overflowing near market', modelVersion: '1.0.0' } },
+  { title: 'Water leakage on Mall Road', description: 'Major water leakage from underground pipe on Mall Road. Water flooding the street.', issueCategory: 'water_leakage', severity: 'critical', status: 'resolved', location: { latitude: 31.5204, longitude: 74.3587, address: 'Mall Road, Lahore', city: 'Lahore' }, images: [], aiAnalysis: { confidence: 0.95, detectedObjects: ['water', 'leakage', 'pipe', 'flooding'], suggestedTitle: 'Water leakage on Mall Road', modelVersion: '1.0.0' } },
+  { title: 'Streetlight not working in Gulberg', description: 'Streetlight pole #45 on Gulberg Main Boulevard has been non-functional for 2 weeks.', issueCategory: 'streetlight', severity: 'low', status: 'pending', location: { latitude: 31.5204, longitude: 74.3587, address: 'Gulberg Main Boulevard, Lahore', city: 'Lahore' }, images: [], aiAnalysis: { confidence: 0.9, detectedObjects: ['streetlight', 'pole', 'dark'], suggestedTitle: 'Streetlight not working in Gulberg', modelVersion: '1.0.0' } },
+  { title: 'Drainage blocked causing flooding', description: 'Main drainage line blocked near Karachi University. Heavy rain causes severe flooding.', issueCategory: 'drainage', severity: 'high', status: 'in_progress', location: { latitude: 24.8607, longitude: 67.0011, address: 'University Road, Karachi', city: 'Karachi' }, images: [], aiAnalysis: { confidence: 0.85, detectedObjects: ['drainage', 'flooding', 'blocked'], suggestedTitle: 'Drainage blocked causing flooding', modelVersion: '1.0.0' } },
 ];
 
 const UserSchema = new mongoose.Schema({
@@ -117,7 +118,14 @@ async function seedDatabase() {
 
     // Insert users
     console.log('👥 Inserting test users...');
-    const createdUsers = await User.insertMany(testUsers);
+    const usersWithHashes = await Promise.all(
+      testUsers.map(async (u) => ({
+        ...u,
+        passwordHash: await bcrypt.hash(u.plainPassword, 10),
+        plainPassword: undefined,
+      }))
+    );
+    const createdUsers = await User.insertMany(usersWithHashes);
     console.log(`✅ Inserted ${createdUsers.length} users`);
 
     // Insert sample complaints (assign to second user - Ahmed)
@@ -145,10 +153,10 @@ async function seedDatabase() {
 
     console.log('✅ Database seeding completed successfully!');
     console.log('\n📋 Test Credentials:');
-    console.log('Admin: admin@civicai.pk / admin123');
-    console.log('User (Urdu): ahmed@civicai.pk / user123');
-    console.log('User (English): sarah@civicai.pk / user123');
-    console.log('User (Urdu): fatima@civicai.pk / user123');
+    console.log('Admin: admin@example.com / admin123');
+    console.log('User 1: user1@example.com / user123');
+    console.log('User 2: user2@example.com / user123');
+    console.log('User 3: user3@example.com / user123');
 
   } catch (error) {
     console.error('❌ Seeding error:', error);

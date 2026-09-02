@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
 interface LocationPickerProps {
-  onLocationChange: (location: { latitude: number; longitude: number; address?: string }) => void;
+  onLocationChange: (location: { latitude: number; longitude: number; address?: string } | null) => void;
   language?: 'en' | 'ur';
   defaultLocation?: { latitude: number; longitude: number } | null;
 }
@@ -87,7 +87,8 @@ export default function LocationPicker({ onLocationChange, language = 'en', defa
   const clearLocation = () => {
     setLocation(null);
     setAddress('');
-    onLocationChange({ latitude: 0, longitude: 0 });
+    setError(null);
+    onLocationChange(null);
   };
 
   return (

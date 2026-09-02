@@ -20,27 +20,14 @@ class ApiClient {
     };
   }
 
-  private async getAuthToken(): Promise<string | null> {
-    if (typeof window !== 'undefined') {
-      // In a real app, get token from NextAuth session or localStorage
-      return null;
-    }
-    return null;
-  }
-
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const token = await this.getAuthToken();
     const headers: HeadersInit = {
       ...this.defaultHeaders,
       ...options.headers,
     };
-
-    if (token) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
 
     const url = `${this.baseUrl}${endpoint}`;
 
@@ -106,17 +93,9 @@ class ApiClient {
   }
 
   async upload<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
-    const token = await this.getAuthToken();
-    const headers: HeadersInit = {};
-
-    if (token) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
-
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'POST',
-        headers,
         body: formData,
       });
 
@@ -171,7 +150,7 @@ export const complaintsApi = {
 };
 
 export const authApi = {
-  register: (data: { name: string; email: string; password: string }) =>
+  register: (data: { name: string; email: string; password: string; phone?: string; language?: string }) =>
     api.post('/api/auth/register', data),
 };
 
@@ -190,8 +169,13 @@ export const organizationsApi = {
 
 export const userApi = {
   getProfile: () => api.get('/api/user/profile'),
-  updateProfile: (data: { name?: string; phone?: string; language?: string }) =>
-    api.patch('/api/user/profile', data),
+  updateProfile: (data: {
+    name?: string;
+    phone?: string;
+    language?: string;
+    profileImage?: string | null;
+    notificationSettings?: Record<string, boolean>;
+  }) => api.patch('/api/user/profile', data),
 };
 
 export const adminApi = {
@@ -205,7 +189,7 @@ export const adminApi = {
   },
   updateComplaintStatus: (id: string, status: string, adminNotes?: string) =>
     api.patch(`/api/admin/complaints/${id}`, { status, adminNotes }),
-  getOrganizations: () => api.get('/api/admin/organizations'),
+  getOrganizations: () => api.get('/api/organizations'),
   createOrganization: (data: {
     name: string;
     nameUrdu: string;
@@ -213,7 +197,7 @@ export const adminApi = {
     email: string;
     phone: string;
     categories: string[];
-  }) => api.post('/api/admin/organizations', data),
+  }) => api.post('/api/organizations', data),
 };
 
 // React hook for API calls with error handling

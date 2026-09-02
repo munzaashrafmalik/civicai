@@ -22,7 +22,7 @@ export default function StatusTracker({ currentStatus, language = 'en' }: Status
   return (
     <div className="card">
       <div className="card-header">
-        <h3 className="text-lg font-semibold text-secondary-900">
+        <h3 className="text-lg font-semibold text-neutral-900">
           {t({ en: 'Complaint Status', ur: 'شکایت کی حالت' }, language)}
         </h3>
       </div>
@@ -38,7 +38,7 @@ export default function StatusTracker({ currentStatus, language = 'en' }: Status
           </div>
         ) : (
           <div className="relative" role="list" aria-label={t({ en: 'Status progress', ur: 'کارروائی کی پیشرفت' }, language)}>
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-secondary-200" aria-hidden="true"></div>
+            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-neutral-200" aria-hidden="true"></div>
 
             {statusSteps.map((step, index) => {
               const isCompleted = index <= currentStepIndex;
@@ -53,25 +53,25 @@ export default function StatusTracker({ currentStatus, language = 'en' }: Status
 
               return (
                 <div key={step.key} className="relative flex items-start pb-8 last:pb-0" role="listitem">
-                  <div className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full ${
+                  <div className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
                     isCompleted
                       ? isCurrent
-                        ? 'bg-primary-500 ring-4 ring-primary-100'
+                        ? 'bg-secondary-500 ring-4 ring-secondary-100'
                         : 'bg-success-500'
-                      : 'bg-secondary-200'
+                      : 'bg-neutral-200'
                   }`} aria-current={isCurrent ? 'step' : undefined}>
-                    <svg className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-secondary-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-neutral-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       {Icon}
                     </svg>
                   </div>
                   <div className="ml-3 flex-1">
                     <p className={`text-sm font-medium ${
-                      isCompleted ? 'text-secondary-900' : 'text-secondary-500'
+                      isCompleted ? 'text-neutral-900' : 'text-neutral-400'
                     }`}>
                       {t(step.label, language)}
                     </p>
                     {isCurrent && (
-                      <p className="text-xs text-primary-600 mt-0.5 animate-pulse">
+                      <p className="text-xs text-secondary-600 mt-0.5 animate-pulse">
                         {t({ en: 'Current status', ur: 'موجودہ حالت' }, language)}
                       </p>
                     )}

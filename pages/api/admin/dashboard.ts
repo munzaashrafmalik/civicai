@@ -43,14 +43,17 @@ export default async function handler(
       Organization.countDocuments({ isActive: true }),
       Complaint.find().sort({ createdAt: -1 }).limit(10).lean(),
       Complaint.aggregate([
+        { $match: { issueCategory: { $ne: null } } },
         { $group: { _id: '$issueCategory', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
       Complaint.aggregate([
+        { $match: { 'location.city': { $ne: null } } },
         { $group: { _id: '$location.city', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
       Complaint.aggregate([
+        { $match: { severity: { $ne: null } } },
         { $group: { _id: '$severity', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),

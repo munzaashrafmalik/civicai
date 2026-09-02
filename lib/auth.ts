@@ -1,8 +1,10 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import connectDB from './mongodb';
 import { User } from '@/backend/database/users/user.model';
+import { sendWelcomeNotification } from '@/backend/notifications/notificationService';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -40,21 +42,53 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   pages: {
     signIn: '/login',
     error: '/login',
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        await connectDB();
+        const existingUser = await User.findOne({ email: user.email?.toLowerCase() });
+        if (!existingUser) {
+          const newUser = await User.create({
+            name: user.name || profile?.name || 'User',
+            email: user.email?.toLowerCase(),
+            role: 'citizen',
+            language: 'en',
+            emailVerified: true,
+            profileImage: user.image || (profile as any)?.picture,
+          });
+          // Send welcome notification asynchronously
+          sendWelcomeNotification(newUser._id.toString()).catch(console.error);
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
         token.language = (user as any).language;
+      }
+      if (token.email) {
+        await connectDB();
+        const dbUser = await User.findOne({ email: token.email.toLowerCase() }).lean();
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+          token.role = dbUser.role;
+          token.language = dbUser.language;
+        }
       }
       return token;
     },

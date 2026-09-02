@@ -46,7 +46,7 @@ export default function ComplaintPreview({
   return (
     <div className="card">
       <div className="card-header">
-        <h3 className="text-lg font-semibold text-secondary-900">
+        <h3 className="text-lg font-semibold text-neutral-900">
           {t({ en: 'Complaint Preview', ur: 'شکایت کا پیش نظارہ' }, language)}
         </h3>
       </div>
@@ -61,41 +61,41 @@ export default function ComplaintPreview({
         </div>
 
         <div>
-          <p className="text-sm font-medium text-secondary-700 mb-1">
+          <p className="text-sm font-medium text-neutral-600 mb-1">
             {t({ en: 'Title', ur: 'عنوان' }, language)}
           </p>
-          <p className="text-secondary-900">{title || '---'}</p>
+          <p className="text-neutral-900">{title || '---'}</p>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-secondary-700 mb-1">
+          <p className="text-sm font-medium text-neutral-600 mb-1">
             {t({ en: 'Description', ur: 'تفصیل' }, language)}
           </p>
-          <p className="text-secondary-900">{description || '---'}</p>
+          <p className="text-neutral-900">{description || '---'}</p>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-secondary-700 mb-1">
+          <p className="text-sm font-medium text-neutral-600 mb-1">
             {t({ en: 'Location', ur: 'مقام' }, language)}
           </p>
-          <p className="text-secondary-900">
+          <p className="text-neutral-900">
             {location.address || `${t({ en: 'Lat', ur: 'عرض' }, language)}: ${location.latitude}, ${t({ en: 'Lng', ur: 'طول' }, language)}: ${location.longitude}`}
           </p>
         </div>
 
         {images && images.length > 0 && (
           <div>
-            <p className="text-sm font-medium text-secondary-700 mb-1">
+            <p className="text-sm font-medium text-neutral-600 mb-1">
               {t({ en: 'Images', ur: 'تصاویر' }, language)} ({images.length})
             </p>
             <div className="grid grid-cols-2 gap-2">
               {images.slice(0, 4).map((img, i) => (
-                <div key={i} className="aspect-square rounded-lg bg-secondary-100 overflow-hidden">
+                <div key={i} className="aspect-square rounded-lg bg-neutral-100 overflow-hidden">
                   <img src={img} alt={t({ en: `Image ${i + 1}`, ur: `تصویر ${i + 1}` }, language)} className="w-full h-full object-cover" />
                 </div>
               ))}
               {images.length > 4 && (
-                <div className="aspect-square rounded-lg bg-secondary-100 flex items-center justify-center text-secondary-600 font-medium">
+                <div className="aspect-square rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-500 font-medium">
                   +{images.length - 4}
                 </div>
               )}
@@ -105,10 +105,10 @@ export default function ComplaintPreview({
 
         {voiceTranscript && (
           <div>
-            <p className="text-sm font-medium text-secondary-700 mb-1">
+            <p className="text-sm font-medium text-neutral-600 mb-1">
               {t({ en: 'Voice Transcript', ur: 'آواز سی سکرپٹ' }, language)}
             </p>
-            <p className="text-secondary-900 italic">"{voiceTranscript}"</p>
+            <p className="text-neutral-900 italic">"{voiceTranscript}"</p>
           </div>
         )}
       </div>

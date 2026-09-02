@@ -5,6 +5,7 @@ import { Complaint } from '@/backend/database/complaints/complaint.model';
 import { User } from '@/backend/database/users/user.model';
 import { findOrganizationForComplaint } from '@/backend/services/routingService/routingService';
 import connectDB from '@/lib/mongodb';
+import { rateLimit, rateLimits } from '@/lib/rateLimit';
 
 export const config = {
   api: {
@@ -23,12 +24,33 @@ export default async function handler(
   // GET /api/complaints - List complaints
   if (method === 'GET') {
     try {
-      const { userId, status, category, page = '1', limit = '10' } = req.query;
+      const session = await getServerSession(req, res, authOptions);
+      const isAdmin = (session?.user as any)?.role === 'admin';
+      const userId = session ? (session.user as any)?.id : null;
+
+      const { status, category, page = '1', limit = '10' } = req.query;
       const query: any = {};
 
-      if (userId) query.userId = userId;
-      if (status) query.status = status;
-      if (category) query.issueCategory = category;
+      // Non-authenticated requests only get count (for home page stats)
+      if (!session) {
+        const total = await Complaint.countDocuments();
+        return res.status(200).json({
+          success: true,
+          data: [],
+          pagination: { page: 1, limit: 1, total, totalPages: 1 },
+        });
+      }
+
+      // Citizens can only see their own complaints
+      if (!isAdmin) {
+        query.userId = userId;
+      } else if (req.query.userId) {
+        // Admin can filter by specific user
+        query.userId = req.query.userId;
+      }
+
+      if (status && typeof status === 'string') query.status = status;
+      if (category && typeof category === 'string') query.issueCategory = category;
 
       const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
       const limitNum = Math.min(50, Math.max(1, parseInt(limit as string, 10) || 10));
@@ -61,6 +83,7 @@ export default async function handler(
 
   // POST /api/complaints - Create new complaint
   if (method === 'POST') {
+    if (rateLimit(req, res, rateLimits.complaint)) return;
     try {
       const session = await getServerSession(req, res, authOptions);
 
@@ -86,6 +109,25 @@ export default async function handler(
 
       if (!title || !description || !category || !severity || !location) {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
+      }
+
+      const validCategories = ['pothole', 'garbage', 'water_leakage', 'streetlight', 'drainage', 'traffic_signal', 'road_damage', 'other'];
+      const validSeverities = ['low', 'medium', 'high', 'critical'];
+
+      if (typeof title !== 'string' || title.trim().length === 0 || title.length > 200) {
+        return res.status(400).json({ success: false, error: 'Title must be 1-200 characters' });
+      }
+      if (typeof description !== 'string' || description.trim().length === 0 || description.length > 5000) {
+        return res.status(400).json({ success: false, error: 'Description must be 1-5000 characters' });
+      }
+      if (!validCategories.includes(category)) {
+        return res.status(400).json({ success: false, error: 'Invalid category' });
+      }
+      if (!validSeverities.includes(severity)) {
+        return res.status(400).json({ success: false, error: 'Invalid severity' });
+      }
+      if (!Array.isArray(images) || images.length > 10) {
+        return res.status(400).json({ success: false, error: 'Maximum 10 images allowed' });
       }
 
       // Normalize location: accept {lat, lng} or {latitude, longitude}

@@ -104,16 +104,16 @@ export default function ComplaintDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-secondary-50">
+      <div className="min-h-screen bg-neutral-50">
         <Navbar language={language} onLanguageChange={setLanguage} />
         <main className="pt-16">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-secondary-200 rounded w-1/2"></div>
-              <div className="h-32 bg-secondary-200 rounded"></div>
-              <div className="h-4 bg-secondary-200 rounded w-3/4"></div>
-              <div className="h-4 bg-secondary-200 rounded w-1/2"></div>
-              <div className="h-4 bg-secondary-200 rounded w-1/4"></div>
+              <div className="h-8 bg-neutral-200 rounded w-1/2"></div>
+              <div className="h-32 bg-neutral-200 rounded"></div>
+              <div className="h-4 bg-neutral-200 rounded w-3/4"></div>
+              <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
+              <div className="h-4 bg-neutral-200 rounded w-1/4"></div>
             </div>
           </div>
         </main>
@@ -123,15 +123,15 @@ export default function ComplaintDetailsPage() {
 
   if (!complaint) {
     return (
-      <div className="min-h-screen bg-secondary-50">
+      <div className="min-h-screen bg-neutral-50">
         <Navbar language={language} onLanguageChange={setLanguage} />
         <main className="pt-16">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="card text-center py-16">
-              <h2 className="text-xl font-semibold text-secondary-900 mb-2">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-2">
                 {t({ en: 'Complaint Not Found', ur: 'شکایت نہیں ملی' }, language)}
               </h2>
-              <p className="text-secondary-600">
+              <p className="text-neutral-500">
                 {t({ en: 'The complaint you\'re looking for doesn\'t exist.', ur: 'آپ جو شکایت تلاش کر رہے ہیں وہ موجود نہیں ہے۔' }, language)}
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function ComplaintDetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-neutral-50">
       <Navbar language={language} onLanguageChange={setLanguage} />
 
       {showSubmittedToast && (
@@ -186,7 +186,7 @@ export default function ComplaintDetailsPage() {
 
           <div className="card mb-6">
             <div className="card-header">
-              <h1 className="text-xl font-bold text-secondary-900">{complaint.title}</h1>
+              <h1 className="text-xl font-bold text-neutral-900">{complaint.title}</h1>
             </div>
             <div className="card-body space-y-6">
               <div className="flex flex-wrap gap-2">
@@ -207,18 +207,18 @@ export default function ComplaintDetailsPage() {
                 )}
               </div>
 
-              <div className="border-t border-secondary-200 pt-6">
-                <p className="text-secondary-700 leading-relaxed">{complaint.description}</p>
+              <div className="border-t border-neutral-200 pt-6">
+                <p className="text-neutral-600 leading-relaxed">{complaint.description}</p>
               </div>
 
               {complaint.images && complaint.images.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-secondary-700 mb-3">
+                  <h3 className="text-sm font-medium text-neutral-600 mb-3">
                     {t({ en: 'Images', ur: 'تصاویر' }, language)}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {complaint.images.map((img, i) => (
-                      <div key={i} className="aspect-video rounded-lg overflow-hidden bg-secondary-100">
+                      <div key={i} className="aspect-video rounded-lg overflow-hidden bg-neutral-100">
                         <img src={img} alt={`${t({ en: 'Complaint image', ur: 'شکایت کی تصویر' }, language)} ${i + 1}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
@@ -227,88 +227,88 @@ export default function ComplaintDetailsPage() {
               )}
 
               {complaint.voiceTranscript && (
-                <div className="p-4 rounded-lg bg-secondary-50 border border-secondary-200">
-                  <p className="text-sm font-medium text-secondary-700 mb-1">
+                <div className="p-4 rounded-lg bg-neutral-50 border border-neutral-200">
+                  <p className="text-sm font-medium text-neutral-600 mb-1">
                     {t({ en: 'Voice Transcript', ur: 'آواز سی سکرپٹ' }, language)}
                   </p>
-                  <p className="text-secondary-900 italic">"{complaint.voiceTranscript}"</p>
+                  <p className="text-neutral-900 italic">"{complaint.voiceTranscript}"</p>
                 </div>
               )}
 
-              <div className="grid sm:grid-cols-2 gap-4 border-t border-secondary-200 pt-6">
+              <div className="grid sm:grid-cols-2 gap-4 border-t border-neutral-200 pt-6">
                 <div>
-                  <p className="text-sm font-medium text-secondary-700 mb-1">
+                  <p className="text-sm font-medium text-neutral-600 mb-1">
                     {t({ en: 'Location', ur: 'مقام' }, language)}
                   </p>
-                  <p className="text-secondary-900">
+                  <p className="text-neutral-900">
                     {complaint.location.address || `${complaint.location.latitude.toFixed(6)}, ${complaint.location.longitude.toFixed(6)}`}
                   </p>
-                  <p className="text-xs text-secondary-500 mt-1 font-mono">
+                  <p className="text-xs text-neutral-400 mt-1 font-mono">
                     {t({ en: 'Lat', ur: 'العرض' }, language)}: {complaint.location.latitude.toFixed(6)}, {t({ en: 'Lng', ur: 'الطول' }, language)}: {complaint.location.longitude.toFixed(6)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-secondary-700 mb-1">
+                  <p className="text-sm font-medium text-neutral-600 mb-1">
                     {t({ en: 'Reported On', ur: 'رپورٹ کی تاریخ' }, language)}
                   </p>
-                  <p className="text-secondary-900">{formatDate(complaint.createdAt)}</p>
+                  <p className="text-neutral-900">{formatDate(complaint.createdAt)}</p>
                 </div>
               </div>
 
               {complaint.assignedOrganization && (
-                <div className="p-4 rounded-lg bg-primary-50 border border-primary-200 border-t border-secondary-200 pt-6">
-                  <p className="text-sm font-medium text-primary-800 mb-1">
+                <div className="p-4 rounded-lg bg-secondary-50 border border-secondary-200">
+                  <p className="text-sm font-medium text-neutral-600 mb-1">
                     {t({ en: 'Assigned Organization', ur: 'مخصوص ادارہ' }, language)}
                   </p>
-                  <p className="text-primary-900">{complaint.assignedOrganization}</p>
+                  <p className="text-neutral-900">{complaint.assignedOrganization}</p>
                 </div>
               )}
 
-              <div className="border-t border-secondary-200 pt-6">
+              <div className="border-t border-neutral-200 pt-6">
                 <StatusTracker currentStatus={complaint.status} language={language} />
               </div>
 
-              <div className="border-t border-secondary-200 pt-6">
-                <h3 className="text-sm font-medium text-secondary-700 mb-3">
+              <div className="border-t border-neutral-200 pt-6">
+                <h3 className="text-sm font-medium text-neutral-600 mb-3">
                   {t({ en: 'Timeline', ur: 'وقت کی لائن' }, language)}
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-secondary-900">{t({ en: 'Complaint Submitted', ur: 'شکایت جمع ہوئی' }, language)}</p>
-                      <p className="text-sm text-secondary-500">{formatDate(complaint.createdAt)}</p>
+                      <p className="font-medium text-neutral-900">{t({ en: 'Complaint Submitted', ur: 'شکایت جمع ہوئی' }, language)}</p>
+                      <p className="text-sm text-neutral-400">{formatDate(complaint.createdAt)}</p>
                     </div>
                   </div>
 
                   {complaint.status !== 'pending' && (
-                    <div className="flex items-start gap-3 ml-4 border-l-2 border-secondary-200 pl-4">
-                      <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="flex items-start gap-3 ml-4 border-l-2 border-neutral-200 pl-4">
+                      <div className="w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-secondary-900">{t({ en: 'Under Review', ur: 'جائزہ تحت' }, language)}</p>
-                        <p className="text-sm text-secondary-500">{formatDate(complaint.updatedAt)}</p>
+                        <p className="font-medium text-neutral-900">{t({ en: 'Under Review', ur: 'جائزہ تحت' }, language)}</p>
+                        <p className="text-sm text-neutral-400">{formatDate(complaint.updatedAt)}</p>
                       </div>
                     </div>
                   )}
 
                   {complaint.status === 'in_progress' && (
-                    <div className="flex items-start gap-3 ml-4 border-l-2 border-primary-200 pl-4">
-                      <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse">
+                    <div className="flex items-start gap-3 ml-4 border-l-2 border-secondary-200 pl-4">
+                      <div className="w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-primary-700">{t({ en: 'Work in Progress', ur: 'کام جاری ہے' }, language)}</p>
-                        <p className="text-sm text-secondary-500">{t({ en: 'Organization is working on the issue', ur: 'ادارہ مسئلے پر کام کر رہا ہے' }, language)}</p>
+                        <p className="font-medium text-secondary-700">{t({ en: 'Work in Progress', ur: 'کام جاری ہے' }, language)}</p>
+                        <p className="text-sm text-neutral-400">{t({ en: 'Organization is working on the issue', ur: 'ادارہ مسئلے پر کام کر رہا ہے' }, language)}</p>
                       </div>
                     </div>
                   )}
@@ -322,7 +322,7 @@ export default function ComplaintDetailsPage() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-success-700">{t({ en: 'Issue Resolved', ur: 'مسئلہ حل ہو گیا' }, language)}</p>
-                        <p className="text-sm text-secondary-500">{formatDate(complaint.resolvedAt)}</p>
+                        <p className="text-sm text-neutral-400">{formatDate(complaint.resolvedAt)}</p>
                       </div>
                     </div>
                   )}
@@ -333,12 +333,12 @@ export default function ComplaintDetailsPage() {
 
           <div className="card">
             <div className="card-header">
-              <h3 className="text-lg font-semibold text-secondary-900">
+              <h3 className="text-lg font-semibold text-neutral-900">
                 {t({ en: 'Need Help?', ur: 'مدد چاہیے؟' }, language)}
               </h3>
             </div>
             <div className="card-body">
-              <p className="text-secondary-600 mb-4">
+              <p className="text-neutral-500 mb-4">
                 {t({ en: 'If you have additional information or want to follow up on this complaint, please contact the assigned organization directly.', ur: 'اگر آپ کے پاس مزید معلومات ہیں یا اس شکایت پر تعاقب کرنا چاہتے ہیں، تو براہ کرم مخصوص ادارے سے براہ راست رابطہ کریں۔' }, language)}
               </p>
               <div className="flex flex-wrap gap-3">

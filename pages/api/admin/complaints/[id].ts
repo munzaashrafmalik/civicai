@@ -4,6 +4,7 @@ import { isValidObjectId } from 'mongoose';
 import { authOptions } from '@/lib/auth';
 import { Complaint } from '@/backend/database/complaints/complaint.model';
 import connectDB from '@/lib/mongodb';
+import { sendComplaintStatusNotification } from '@/backend/notifications/notificationService';
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,13 +33,28 @@ export default async function handler(
       : { complaintId: id };
 
     const updateData: any = { status };
-    if (adminNotes) updateData.adminNotes = adminNotes;
+    if (adminNotes) {
+      if (typeof adminNotes !== 'string' || adminNotes.length > 1000) {
+        return res.status(400).json({ success: false, error: 'Admin notes must be under 1000 characters' });
+      }
+      updateData.adminNotes = adminNotes;
+    }
     if (status === 'resolved') updateData.resolvedAt = new Date();
 
     const complaint = await Complaint.findOneAndUpdate(filter, updateData, { new: true }).lean();
 
     if (!complaint) {
       return res.status(404).json({ success: false, error: 'Complaint not found' });
+    }
+
+    // Send notification to user about status change
+    if (complaint.userId) {
+      sendComplaintStatusNotification(
+        complaint.userId.toString(),
+        complaint.title,
+        status,
+        complaint._id.toString()
+      ).catch(console.error);
     }
 
     return res.status(200).json({

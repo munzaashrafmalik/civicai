@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 interface ImageUploaderProps {
   onImagesChange: (images: File[]) => void;
@@ -23,6 +23,14 @@ export default function ImageUploader({
   const [previews, setPreviews] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const previewsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    previewsRef.current = previews;
+    return () => {
+      previews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
 
   const validateFile = useCallback((file: File): boolean => {
     if (!acceptedTypes.includes(file.type)) {
@@ -95,14 +103,14 @@ export default function ImageUploader({
     <div className="w-full">
       <label className="label">
         {t({ en: 'Upload Photos', ur: 'تصاویر اپ لوڈ کریں' }, language)}
-        <span className="text-secondary-500 ml-1">({t({ en: 'Max', ur: 'اکثرین' }, language)} {maxImages}, {t({ en: 'Max', ur: 'اکثرین' }, language)} {maxSizeMB}MB)</span>
+        <span className="text-neutral-400 ml-1">({t({ en: 'Max', ur: 'اکثرین' }, language)} {maxImages}, {t({ en: 'Max', ur: 'اکثرین' }, language)} {maxSizeMB}MB)</span>
       </label>
 
       <div
         className={`relative border-2 border-dashed rounded-xl p-6 transition-colors ${
           dragActive
-            ? 'border-primary-500 bg-primary-50'
-            : 'border-secondary-300 hover:border-primary-400'
+            ? 'border-secondary-500 bg-secondary-50'
+            : 'border-secondary-300 hover:border-secondary-400'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -121,7 +129,7 @@ export default function ImageUploader({
 
         <div className="text-center">
           <svg
-            className="mx-auto h-12 w-12 text-secondary-400"
+            className="mx-auto h-12 w-12 text-neutral-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -134,10 +142,10 @@ export default function ImageUploader({
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <p className="mt-2 text-sm text-secondary-600">
+          <p className="mt-2 text-sm text-neutral-500">
             {t({ en: 'Drag & drop photos here, or click to select', ur: 'تصاویر یہاں ڈراگ اور ڈراپ کریں، یا منتخب کرنے کے لیے کلک کریں' }, language)}
           </p>
-          <p className="mt-1 text-xs text-secondary-500">
+          <p className="mt-1 text-xs text-neutral-400">
             {t({ en: 'JPEG, PNG, WebP up to 5MB each', ur: 'JPEG، PNG، WebP، ہر ایک 5MB تک' }, language)}
           </p>
         </div>

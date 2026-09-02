@@ -153,8 +153,8 @@ export default function VoiceRecorder({ onTranscriptChange, language = 'en' }: V
               className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 transition-all ${
                 isRecording
                   ? 'bg-danger-50 border-danger-500 text-danger-700 animate-pulse'
-                  : 'bg-secondary-50 border-secondary-200 text-secondary-700 hover:bg-secondary-100 hover:border-primary-300'
-              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
+                  : 'bg-secondary-50 border-secondary-200 text-secondary-700 hover:bg-secondary-100 hover:border-secondary-300'
+              } focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent`}
               aria-pressed={isRecording}
               aria-label={isRecording
                 ? t({ en: 'Stop recording', ur: 'ریکارڈنگ بند کریں' }, language)
@@ -163,7 +163,7 @@ export default function VoiceRecorder({ onTranscriptChange, language = 'en' }: V
               <div className={`flex items-center justify-center w-12 h-12 rounded-full ${
                 isRecording
                   ? 'bg-danger-500'
-                  : 'bg-primary-500'
+                  : 'bg-secondary-500'
               }`}>
                 <svg
                   className="w-6 h-6 text-white"
@@ -204,15 +204,15 @@ export default function VoiceRecorder({ onTranscriptChange, language = 'en' }: V
             <div className="mt-4 p-4 rounded-lg bg-secondary-50 border border-secondary-200 animate-fade-in">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-secondary-700 mb-1">
+                  <p className="text-sm font-medium text-neutral-600 mb-1">
                     {t({ en: 'Transcript', ur: 'تحریر' }, language)}
                   </p>
-                  <p className="text-secondary-900">{transcript}</p>
+                  <p className="text-neutral-900">{transcript}</p>
                 </div>
                 <button
                   type="button"
                   onClick={clearTranscript}
-                  className="p-2 text-secondary-500 hover:text-danger-600 hover:bg-danger-50 rounded-lg transition-colors"
+                  className="p-2 text-neutral-400 hover:text-danger-600 hover:bg-danger-50 rounded-lg transition-colors"
                   aria-label={t({ en: 'Clear transcript', ur: 'تحریر صاف کریں' }, language)}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

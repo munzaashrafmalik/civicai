@@ -96,14 +96,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Test Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@civicai.pk | admin123 |
-| Citizen (Urdu) | ahmed@civicai.pk | user123 |
-| Citizen (English) | sarah@civicai.pk | user123 |
-
 ### Environment Variables
 
 See `.env.example` for all available options. Key variables:

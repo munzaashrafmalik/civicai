@@ -110,7 +110,7 @@ export default function ReportIssuePage() {
     setFormData(prev => ({ ...prev, voiceTranscript: transcript }));
   }, []);
 
-  const handleLocationChange = useCallback((location: { latitude: number; longitude: number; address?: string }) => {
+  const handleLocationChange = useCallback((location: { latitude: number; longitude: number; address?: string } | null) => {
     setFormData(prev => ({ ...prev, location }));
   }, []);
 
@@ -209,11 +209,27 @@ export default function ReportIssuePage() {
   const canAnalyze = formData.images.length > 0 || formData.voiceTranscript.trim() || formData.description.trim();
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-neutral-50">
       <Navbar language={language} onLanguageChange={setLanguage} />
 
       <main className="pt-16 pb-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Page Header */}
+          <div className="mb-8">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-50 text-accent-700 text-xs font-semibold border border-accent-200/50 mb-3">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.734-.988-2.386l-.548-.547z" />
+              </svg>
+              {t({ en: 'AI-Powered', ur: 'اے آئی سے لیس' }, language)}
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">
+              {t({ en: 'Report an Issue', ur: 'مسئلہ رپورٹ کریں' }, language)}
+            </h1>
+            <p className="text-neutral-500 mt-1">
+              {t({ en: 'Our AI will analyze and route your complaint automatically', ur: 'ہماری اے آئی آپ کی شکایت خود بخود تجزیہ اور روٹ کرے گی' }, language)}
+            </p>
+          </div>
+
           {/* Progress indicator */}
           <div className="mb-8" role="navigation" aria-label="Progress">
             <div className="flex items-center justify-between">
@@ -228,21 +244,21 @@ export default function ReportIssuePage() {
                 return (
                   <React.Fragment key={s}>
                     <div className="flex flex-col items-center">
-                      <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                        isActive ? 'bg-primary-600 text-white' : 'bg-secondary-200 text-secondary-500'
-                      } ${isCurrent ? 'ring-4 ring-primary-100' : ''}`}>
+                      <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                        isActive ? 'bg-gradient-to-br from-secondary-500 to-secondary-600 text-white shadow-lg shadow-secondary-500/20' : 'bg-neutral-200 text-neutral-400'
+                      } ${isCurrent ? 'ring-4 ring-secondary-100 scale-110' : ''}`}>
                         {isActive && i < ['input', 'analysis', 'preview'].indexOf(step) ? (
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         ) : i + 1}
                       </div>
-                      <span className={`mt-2 text-xs font-medium text-center ${isActive ? 'text-secondary-900' : 'text-secondary-500'}`}>
+                      <span className={`mt-2 text-xs font-medium text-center transition-colors duration-300 ${isActive ? 'text-neutral-900' : 'text-neutral-400'}`}>
                         {t(stepLabels[s], language)}
                       </span>
                     </div>
                     {i < 2 && (
-                      <div className={`flex-1 h-0.5 mx-2 ${isActive ? 'bg-primary-600' : 'bg-secondary-200'}`} />
+                      <div className={`flex-1 h-0.5 mx-2 rounded-full transition-colors duration-300 ${isActive ? 'bg-gradient-to-r from-secondary-500 to-secondary-400' : 'bg-neutral-200'}`} />
                     )}
                   </React.Fragment>
                 );
@@ -255,7 +271,7 @@ export default function ReportIssuePage() {
             <div className="animate-fade-in">
               <div className="card">
                 <div className="card-header">
-                  <h2 className="text-xl font-semibold text-secondary-900">
+                  <h2 className="text-xl font-semibold text-neutral-900">
                     {t({ en: 'Report an Issue', ur: 'مسئلہ رپورٹ کریں' }, language)}
                   </h2>
                 </div>
@@ -303,7 +319,7 @@ export default function ReportIssuePage() {
                 <button
                   onClick={analyzeWithAI}
                   disabled={!canAnalyze || isAnalyzing}
-                  className="btn-primary px-8 py-3"
+                  className="btn-ai px-8 py-3 flex items-center"
                 >
                   {isAnalyzing ? (
                     <>
