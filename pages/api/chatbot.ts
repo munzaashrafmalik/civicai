@@ -7,6 +7,14 @@ const DASHSCOPE_BASE_URL = process.env.DASHSCOPE_BASE_URL || 'https://dashscope-
 const DASHSCOPE_ENDPOINT = DASHSCOPE_BASE_URL + '/chat/completions';
 const CHATBOT_MODEL = process.env.DASHSCOPE_TEXT_MODEL || 'qwen-plus-character';
 
+function getApiKeys(): string[] {
+  return [
+    process.env.DASHSCOPE_API_KEY,
+    process.env.DASHSCOPE_API_KEY_2,
+    process.env.DASHSCOPE_API_KEY_3,
+  ].filter((k): k is string => !!k && k.trim().length > 0);
+}
+
 const SYSTEM_PROMPT = `You are CivicAI Assistant, a helpful AI chatbot for the CivicAI platform — a smart civic complaint and assistance platform for Pakistan.
 
 Your role:
@@ -101,38 +109,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ? history.slice(-10).filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string').map(m => ({ role: m.role, content: m.content.slice(0, 500) }))
     : [];
 
-  if (process.env.DASHSCOPE_API_KEY) {
-    try {
-      const messages: ChatMessage[] = [
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...safeHistory,
-        { role: 'user', content: message.trim() },
-      ];
+  const keys = getApiKeys();
+  if (keys.length > 0) {
+    const messages: ChatMessage[] = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...safeHistory,
+      { role: 'user', content: message.trim() },
+    ];
 
-      const response = await fetch(DASHSCOPE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.DASHSCOPE_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: CHATBOT_MODEL,
-          messages,
-          temperature: 0.7,
-          max_tokens: 300,
-        }),
-      });
+    for (let i = 0; i < keys.length; i++) {
+      try {
+        const response = await fetch(DASHSCOPE_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${keys[i]}`,
+          },
+          body: JSON.stringify({
+            model: CHATBOT_MODEL,
+            messages,
+            temperature: 0.7,
+            max_tokens: 300,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`DashScope API error ${response.status}`);
+        if (!response.ok) {
+          const body = await response.text().catch(() => '');
+          if (response.status === 429 || body.includes('Quota') || body.includes('Arrearage') || body.includes('balance')) {
+            console.warn(`[chatbot] Key ${i + 1}/${keys.length} quota exceeded, trying next...`);
+            continue;
+          }
+          throw new Error(`DashScope API error ${response.status}`);
+        }
+
+        const data = await response.json();
+        const reply: string = data?.choices?.[0]?.message?.content?.trim() || localFallback(message);
+
+        return res.status(200).json({ success: true, data: { reply } });
+      } catch (error) {
+        const msg = String((error as any)?.message || '');
+        if (msg.includes('Quota') || msg.includes('Arrearage') || msg.includes('balance') || msg.includes('429')) {
+          console.warn(`[chatbot] Key ${i + 1}/${keys.length} failed, trying next...`);
+          continue;
+        }
+        console.error('Chatbot DashScope call failed, using fallback:', error);
+        break;
       }
-
-      const data = await response.json();
-      const reply: string = data?.choices?.[0]?.message?.content?.trim() || localFallback(message);
-
-      return res.status(200).json({ success: true, data: { reply } });
-    } catch (error) {
-      console.error('Chatbot DashScope call failed, using fallback:', error);
     }
   }
 

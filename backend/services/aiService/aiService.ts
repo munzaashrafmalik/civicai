@@ -19,6 +19,14 @@ const DASHSCOPE_ENDPOINT = DASHSCOPE_BASE_URL + '/chat/completions';
 const VISION_MODELS = ['qwen3-vl-plus', 'qwen-vl-max'];
 const TEXT_MODEL = process.env.DASHSCOPE_TEXT_MODEL || 'qwen-plus-character';
 
+function getApiKeys(): string[] {
+  return [
+    process.env.DASHSCOPE_API_KEY,
+    process.env.DASHSCOPE_API_KEY_2,
+    process.env.DASHSCOPE_API_KEY_3,
+  ].filter((k): k is string => !!k && k.trim().length > 0);
+}
+
 const VALID_CATEGORIES = [
   'pothole', 'garbage', 'water_leakage', 'streetlight',
   'drainage', 'traffic_signal', 'road_damage', 'other',
@@ -50,42 +58,69 @@ interface QwenContentPart {
 }
 
 async function callQwen(model: string, content: QwenContentPart[] | string): Promise<AIAnalysisOutput> {
-  const response = await fetch(DASHSCOPE_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.DASHSCOPE_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.1,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content },
-      ],
-      response_format: { type: 'json_object' },
-    }),
-  });
+  const keys = getApiKeys();
+  if (keys.length === 0) throw new Error('No DashScope API keys configured');
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => '');
-    throw new Error(`DashScope API error ${response.status}: ${body.slice(0, 300)}`);
+  let lastError: Error | null = null;
+
+  for (let i = 0; i < keys.length; i++) {
+    try {
+      const response = await fetch(DASHSCOPE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${keys[i]}`,
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.1,
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content },
+          ],
+          response_format: { type: 'json_object' },
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        const errMsg = `DashScope API error ${response.status}: ${body.slice(0, 300)}`;
+
+        if (response.status === 429 || body.includes('Quota') || body.includes('quota') || body.includes('Arrearage') || body.includes('balance')) {
+          console.warn(`[ai] Key ${i + 1}/${keys.length} quota exceeded, trying next key...`);
+          lastError = new Error(errMsg);
+          continue;
+        }
+
+        throw new Error(errMsg);
+      }
+
+      const data = await response.json();
+      const raw: string = data?.choices?.[0]?.message?.content;
+      if (!raw) throw new Error('Empty response from DashScope');
+
+      const parsed = JSON.parse(stripJsonFences(raw));
+
+      return sanitizeOutput({
+        issueCategory: parsed.issueCategory,
+        confidence: parsed.confidence,
+        severity: parsed.severity,
+        description: parsed.description,
+        suggestedTitle: parsed.suggestedTitle,
+        detectedObjects: parsed.detectedObjects,
+      });
+    } catch (err: any) {
+      lastError = err;
+      const msg = String(err?.message || '');
+      if (msg.includes('Quota') || msg.includes('Arrearage') || msg.includes('balance') || msg.includes('429')) {
+        console.warn(`[ai] Key ${i + 1}/${keys.length} failed (${msg.slice(0, 80)}), trying next...`);
+        continue;
+      }
+      throw err;
+    }
   }
 
-  const data = await response.json();
-  const raw: string = data?.choices?.[0]?.message?.content;
-  if (!raw) throw new Error('Empty response from DashScope');
-
-  const parsed = JSON.parse(stripJsonFences(raw));
-
-  return sanitizeOutput({
-    issueCategory: parsed.issueCategory,
-    confidence: parsed.confidence,
-    severity: parsed.severity,
-    description: parsed.description,
-    suggestedTitle: parsed.suggestedTitle,
-    detectedObjects: parsed.detectedObjects,
-  });
+  throw lastError || new Error('All API keys exhausted');
 }
 
 async function analyzeWithQwen(
