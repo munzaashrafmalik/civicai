@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getStoredLanguage } from '@/lib/i18n';
+
+const t = (key: { en: string; ur: string }, lang: 'en' | 'ur') => lang === 'ur' ? key.ur : key.en;
 
 interface SplashScreenProps {
   onComplete?: () => void;
@@ -10,6 +13,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [progress, setProgress] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'ur'>('en');
+
+  useEffect(() => {
+    setLanguage(getStoredLanguage());
+  }, []);
 
   useEffect(() => {
     const startTime = Date.now();
@@ -44,7 +52,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0c4a6e 100%)',
       }}
       role="status"
-      aria-label="Loading"
+      aria-label={t({ en: 'Loading', ur: 'لوڈ ہو رہا ہے' }, language)}
     >
       {/* Ambient glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -87,7 +95,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           </span>
         </h1>
         <p className="text-neutral-400 text-sm sm:text-base tracking-wide">
-          Smart Complaints for Smart Cities
+          {t({ en: 'Smart Complaints for Smart Cities', ur: 'سمارٹ شہروں کے لیے سمارٹ شکایات' }, language)}
         </p>
       </div>
 
@@ -105,7 +113,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           />
         </div>
         <p className="text-center text-neutral-500 text-xs mt-3 tracking-widest uppercase">
-          Loading
+          {t({ en: 'Loading', ur: 'لوڈ ہو رہا ہے' }, language)}
         </p>
       </div>
     </div>

@@ -71,4 +71,5 @@ export const rateLimits = {
   register: { windowMs: 60 * 60 * 1000, max: 10, keyPrefix: 'register' },
   complaint: { windowMs: 15 * 60 * 1000, max: 30, keyPrefix: 'complaint' },
   ai: { windowMs: 15 * 60 * 1000, max: 20, keyPrefix: 'ai' },
+  chatbot: { windowMs: 15 * 60 * 1000, max: 20, keyPrefix: 'chatbot' },
 };

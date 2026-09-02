@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
 import { authApi } from '@/lib/api';
@@ -277,9 +278,9 @@ export default function RegisterPage() {
             <div className="px-8 py-4 bg-neutral-50/80 border-t border-neutral-200/60 text-center">
               <p className="text-sm text-neutral-500">
                 {t({ en: 'Already have an account?', ur: 'پہلے سے اکاؤنٹ ہے؟' }, language)}&nbsp;
-                <a href="/login" className="text-secondary-600 font-semibold hover:underline">
+                <Link href="/login" className="text-secondary-600 font-semibold hover:underline">
                   {t({ en: 'Sign In', ur: 'سائن ان' }, language)}
-                </a>
+                </Link>
               </p>
             </div>
           </div>

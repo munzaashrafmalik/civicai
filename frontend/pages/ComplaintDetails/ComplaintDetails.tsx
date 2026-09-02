@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useToastHelpers } from '@/components/Toast';
 import Navbar from '@/components/Navbar/Navbar';
@@ -173,12 +174,12 @@ export default function ComplaintDetailsPage() {
       <main className="pt-16 pb-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between">
-            <a href="/my-complaints" className="btn-outline">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link href="/my-complaints" className="btn-outline flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              {t({ en: 'Back to Complaints', ur: 'شكایات پر واپس' }, language)}
-            </a>
+              {t({ en: 'Back to Complaints', ur: 'شکایات پر واپس' }, language)}
+            </Link>
             <span className={`badge ${complaint.status === 'resolved' ? 'badge-success' : complaint.status === 'in_progress' ? 'badge-primary' : complaint.status === 'rejected' ? 'badge-danger' : 'badge-warning'}`}>
               {t(statusLabels[complaint.status], language)}
             </span>
@@ -348,9 +349,9 @@ export default function ComplaintDetailsPage() {
                   </svg>
                   {t({ en: 'Call Helpline', ur: 'ہیلپ لائن کال کریں' }, language)}
                 </a>
-                <a href="/my-complaints" className="btn-primary">
+                <Link href="/my-complaints" className="btn-primary">
                   {t({ en: 'Back to My Complaints', ur: 'میری شکایات پر واپس' }, language)}
-                </a>
+                </Link>
               </div>
             </div>
           </div>
